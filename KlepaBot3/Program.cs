@@ -46,7 +46,7 @@ namespace KlepaBot3
 
 
             //Секция задания обработчиков событий
-            Client.VoiceStateUpdated += ChannelManager.VoiceStateUpdatedResolve;
+            Client.VoiceStateUpdated += ChannelManager.VoiceStateUpdatedHandler;
 
 
             //-----------------------------------
