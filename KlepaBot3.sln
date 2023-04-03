@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KlepaBot3", "KlepaBot3\KlepaBot3.csproj", "{49C023CB-8774-4CE1-8BCA-732293E328A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{CE03F2DA-95B9-49A1-A4E9-4CC8D01AF6D3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{49C023CB-8774-4CE1-8BCA-732293E328A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49C023CB-8774-4CE1-8BCA-732293E328A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49C023CB-8774-4CE1-8BCA-732293E328A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49C023CB-8774-4CE1-8BCA-732293E328A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE03F2DA-95B9-49A1-A4E9-4CC8D01AF6D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE03F2DA-95B9-49A1-A4E9-4CC8D01AF6D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE03F2DA-95B9-49A1-A4E9-4CC8D01AF6D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE03F2DA-95B9-49A1-A4E9-4CC8D01AF6D3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFA63805-E3AE-45C7-A7AB-E3E48040EAE9}
+	EndGlobalSection
+EndGlobal
