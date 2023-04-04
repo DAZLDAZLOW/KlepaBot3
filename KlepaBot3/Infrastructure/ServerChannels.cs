@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KlepaBot3.Infrastructure
 {
-    internal class ServerChannels
+    public class ServerChannels
     {
         public ulong ServerId;
         public List<KlepaChannel> Channels = new List<KlepaChannel>();

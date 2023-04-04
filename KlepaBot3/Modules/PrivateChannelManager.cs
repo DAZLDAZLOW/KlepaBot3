@@ -15,7 +15,7 @@ namespace KlepaBot3.Modules
     public class PrivateChannelManager
     {
         private readonly KlepaDbContext context;
-        private readonly List<ServerChannels> servers = new List<ServerChannels>();
+        public static readonly List<ServerChannels> servers = new List<ServerChannels>();
 
         public PrivateChannelManager(KlepaDbContext context)
         {
@@ -46,7 +46,7 @@ namespace KlepaBot3.Modules
                 await createdTextChannel.DeleteAsync();
                 throw new Exception($"Не удалось создать приватный голосовой канал на сервере '{server.Id}'.");
             }
-            serverchennels.Channels.Add(new KlepaChannel { Index = newChannelIndex, TextChannelId = createdTextChannel.Id, VoiceChannelId = createdVoiceChannel.Id });
+            serverchennels.Channels.Add(new KlepaChannel {ChannelOwnerId = e.User.Id, Index = newChannelIndex, TextChannelId = createdTextChannel.Id, VoiceChannelId = createdVoiceChannel.Id });
             await createdVoiceChannel.PlaceMemberAsync(e.Guild.Members[e.User.Id]);
         }
 

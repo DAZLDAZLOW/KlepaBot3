@@ -44,7 +44,7 @@ namespace KlepaBot3.Modules
                 await createdTextChannel.DeleteAsync();
                 throw new Exception($"Не удалось создать публичный голосовой канал на сервере '{server.Id}'.");
             }
-            serverchennels.Channels.Add(new KlepaChannel { Index = newChannelIndex, TextChannelId = createdTextChannel.Id, VoiceChannelId = createdVoiceChannel.Id });
+            serverchennels.Channels.Add(new KlepaChannel {ChannelOwnerId = e.User.Id, Index = newChannelIndex, TextChannelId = createdTextChannel.Id, VoiceChannelId = createdVoiceChannel.Id });
             await createdVoiceChannel.PlaceMemberAsync(e.Guild.Members[e.User.Id]);
         }
 

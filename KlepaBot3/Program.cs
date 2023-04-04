@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using DataAccess.Models;
 using DSharpPlus.CommandsNext;
+using System.Reflection;
 
 namespace KlepaBot3
 {
@@ -22,9 +23,9 @@ namespace KlepaBot3
 
         static async Task Main()
         {
+            
             //Вызов метода преднастройки бота
             Setup();
-
             //var channelsetup = new ChannelsSetup()
             //{
             //    PublicMotherChannelId = 1084877469942816768,
@@ -84,13 +85,17 @@ namespace KlepaBot3
                 }).BuildServiceProvider();
 
 
-            Client.UseCommandsNext(new CommandsNextConfiguration()
+            var commands = Client.UseCommandsNext(new CommandsNextConfiguration()
             {
-                Services = services
+                Services = services,
+                StringPrefixes = new[] { "!!" }
             });
+
+            commands.RegisterCommands(Assembly.GetExecutingAssembly());
 
             //Создание ChannelManager
             ChannelManager = new ChannelManager(DataContext);
+
         }
     }
 }
