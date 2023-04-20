@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
-using DSharpPlus.VoiceNext;
+using DSharpPlus.Lavalink;
+using DSharpPlus.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using DataAccess.Models;
 using DSharpPlus.CommandsNext;
 using System.Reflection;
+using System.Net;
 
 namespace KlepaBot3
 {
@@ -20,12 +22,13 @@ namespace KlepaBot3
         private static ChannelManager ChannelManager;
         private static IConfiguration Config;
         private static DiscordClient Client;
+        private static LavalinkNodeConnection LavalinkNode;
 
         static async Task Main()
         {
             
             //Вызов метода преднастройки бота
-            Setup();
+            await Setup();
             //var channelsetup = new ChannelsSetup()
             //{
             //    PublicMotherChannelId = 1084877469942816768,
@@ -53,10 +56,22 @@ namespace KlepaBot3
             //-----------------------------------
 
             await Client.ConnectAsync();
+
+            //Lavalink
+
+            var lavalinkConfig = new LavalinkConfiguration
+            {
+                Password = "assport"
+            };
+
+            var lavalink = Client.UseLavalink();
+
+            LavalinkNode = await lavalink.ConnectAsync(lavalinkConfig);
+
             await Task.Delay(-1);
         }
 
-        static void Setup()
+        static async Task Setup()
         {
             //Конфиг
             Config = new ConfigurationBuilder()
@@ -84,7 +99,7 @@ namespace KlepaBot3
                     x.UseSqlite(Config.GetConnectionString("DataConnection"));
                 }).BuildServiceProvider();
 
-
+            //Команды
             var commands = Client.UseCommandsNext(new CommandsNextConfiguration()
             {
                 Services = services,
@@ -92,6 +107,8 @@ namespace KlepaBot3
             });
 
             commands.RegisterCommands(Assembly.GetExecutingAssembly());
+
+            
 
             //Создание ChannelManager
             ChannelManager = new ChannelManager(DataContext);

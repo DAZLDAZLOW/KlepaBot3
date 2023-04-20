@@ -46,7 +46,16 @@ namespace KlepaBot3.Modules
                 await createdTextChannel.DeleteAsync();
                 throw new Exception($"Не удалось создать приватный голосовой канал на сервере '{server.Id}'.");
             }
-            serverchennels.Channels.Add(new KlepaChannel {ChannelOwnerId = e.User.Id, Index = newChannelIndex, TextChannelId = createdTextChannel.Id, VoiceChannelId = createdVoiceChannel.Id });
+            var klepaChannel = new KlepaChannel
+            {
+                ChannelOwnerId = e.User.Id,
+                Index = newChannelIndex,
+                TextChannelId = createdTextChannel.Id,
+                VoiceChannelId = createdVoiceChannel.Id,
+                IsPrivate= true,
+            };
+            serverchennels.Channels.Add(klepaChannel);
+            await createdTextChannel.SendMessageAsync("Это приватный канал. Пока что его видишь только ты... Добавь кого нибудь командой: '!add NickName#32132'");
             await createdVoiceChannel.PlaceMemberAsync(e.Guild.Members[e.User.Id]);
         }
 
