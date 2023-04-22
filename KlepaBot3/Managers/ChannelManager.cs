@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KlepaBot3
+namespace KlepaBot3.Managers
 {
     internal class ChannelManager
     {
@@ -26,7 +26,7 @@ namespace KlepaBot3
             privateChannelManager = new PrivateChannelManager(context);
         }
 
-        public async Task VoiceStateUpdatedHandler(DiscordClient sender, DSharpPlus.EventArgs.VoiceStateUpdateEventArgs e)
+        public async Task VoiceStateUpdatedHandler(DiscordClient sender, VoiceStateUpdateEventArgs e)
         {
             if (e.Before != null && e.Before.Channel.Users.Count == 0)
             {

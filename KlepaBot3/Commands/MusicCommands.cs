@@ -8,11 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using KlepaBot3.Managers;
 
 namespace KlepaBot3.Commands
 {
     public class MusicCommands : BaseCommandModule
     {
+        public MusicManager Music { private get;  set; } 
+
         [Command]
         public async Task Join(CommandContext ctx)
         {
@@ -64,45 +67,53 @@ namespace KlepaBot3.Commands
         }
 
         [Command]
-        public async Task Play(CommandContext ctx, [RemainingText] string search)
+        public async Task Search(CommandContext ctx, [RemainingText] string search)
         {
-            if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
-            {
-                await ctx.RespondAsync("You are not in a voice channel.");
-                return;
-            }
-
-            var lava = ctx.Client.GetLavalink();
-            var node = lava.ConnectedNodes.Values.First();
-            var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
-
-            if (conn == null)
-            {
-                await ctx.RespondAsync("Lavalink is not connected.");
-                return;
-            }
-            var loadResult = await node.Rest.GetTracksAsync(search);
-            //If something went wrong on Lavalink's end                          
-            if (loadResult.LoadResultType == LavalinkLoadResultType.LoadFailed
-
-                //or it just couldn't find anything.
-                || loadResult.LoadResultType == LavalinkLoadResultType.NoMatches)
-            {
-                await ctx.RespondAsync($"Track search failed for {search}.");
-                return;
-            }
-            var track = loadResult.Tracks.First();
-            await conn.PlayAsync(track);
-
-            await ctx.RespondAsync($"Now playing {track.Title}!");
+            string response = await Music.PlayAsync(ctx, search, false);
+            await ctx.RespondAsync(response);
         }
+
+        //[Command]
+        //public async Task Play(CommandContext ctx, [RemainingText] string search)
+        //{
+        //    if (ctx.Member.VoiceState == null || ctx.Member.VoiceState.Channel == null)
+        //    {
+        //        await ctx.RespondAsync("You are not in a voice channel.");
+        //        return;
+        //    }
+
+        //    var lava = ctx.Client.GetLavalink();
+        //    var node = lava.ConnectedNodes.Values.First();
+        //    var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+
+        //    if (conn == null)
+        //    {
+        //        await ctx.RespondAsync("Lavalink is not connected.");
+        //        return;
+        //    }
+        //    var loadResult = await node.Rest.GetTracksAsync(search);
+        //    //If something went wrong on Lavalink's end                          
+        //    if (loadResult.LoadResultType == LavalinkLoadResultType.LoadFailed
+
+        //        //or it just couldn't find anything.
+        //        || loadResult.LoadResultType == LavalinkLoadResultType.NoMatches)
+        //    {
+        //        await ctx.RespondAsync($"Track search failed for {search}.");
+        //        return;
+        //    }
+        //    var track = loadResult.Tracks.First();
+        //    await conn.PlayAsync(track);
+
+        //    await ctx.RespondAsync($"Now playing {track.Title}!");
+        //}
 
 
 
         [Command]
         public async Task Play(CommandContext ctx, Uri url)
         {
-
+            string response = await Music.PlayAsync(ctx, url.OriginalString);
+            await ctx.RespondAsync(response);
         }
 
         [Command]

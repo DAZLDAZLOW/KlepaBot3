@@ -13,6 +13,7 @@ using DataAccess.Models;
 using DSharpPlus.CommandsNext;
 using System.Reflection;
 using System.Net;
+using KlepaBot3.Managers;
 
 namespace KlepaBot3
 {
@@ -97,7 +98,8 @@ namespace KlepaBot3
                 .AddDbContext<KlepaDbContext>(x =>
                 {
                     x.UseSqlite(Config.GetConnectionString("DataConnection"));
-                }).BuildServiceProvider();
+                }).AddSingleton<MusicManager>()
+                .BuildServiceProvider();
 
             //Команды
             var commands = Client.UseCommandsNext(new CommandsNextConfiguration()
