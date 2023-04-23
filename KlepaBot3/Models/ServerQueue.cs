@@ -12,5 +12,6 @@ namespace KlepaBot3.Models
         public ulong ServerId { get; set; }
         public Queue<LavalinkTrack> Queue { get; set; } = new Queue<LavalinkTrack>();
         public bool IsPlaying { get; set; } = false; 
+        public bool IsHandled { get; set; } = false; //Это свойство нужно для того, чтобы определить подпись на событие заверешения трека 
     }
 }
