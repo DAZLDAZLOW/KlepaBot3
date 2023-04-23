@@ -11,7 +11,7 @@ namespace KlepaBot3.Managers
         //  private LavalinkExtension? lava;
         private List<ServerQueue> servers = new List<ServerQueue>();
 
-        public async Task<string> PlayAsync(CommandContext ctx, string searchQuery, bool IsUrlSearch = true)
+        public async Task<string> PlayAsync(CommandContext ctx, string searchQuery, bool isUrlSearch = true, int startFrom = 1)
         {
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
@@ -41,7 +41,7 @@ namespace KlepaBot3.Managers
                 conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
             }
 
-            var searchType = (IsUrlSearch) ? LavalinkSearchType.Plain : LavalinkSearchType.Youtube;
+            var searchType = (isUrlSearch) ? LavalinkSearchType.Plain : LavalinkSearchType.Youtube;
 
             var loadResult = await node.Rest.GetTracksAsync(searchQuery, searchType);
             //If something went wrong on Lavalink's end                          
@@ -52,7 +52,6 @@ namespace KlepaBot3.Managers
             {
                 return $"Track search failed for {searchQuery}.";
             }
-            var track = loadResult.Tracks.First();
 
             var server = servers.FirstOrDefault(x => x.ServerId == ctx.Guild.Id);
             if (server == null)
@@ -61,6 +60,22 @@ namespace KlepaBot3.Managers
                 servers.Add(server);
             }
 
+            LavalinkTrack track;
+            
+            if (loadResult.LoadResultType == LavalinkLoadResultType.PlaylistLoaded)
+            {
+                //int i = startFrom;
+                foreach (var (tr, i) in loadResult.Tracks.Select((value, ind) => (value, ind)))
+                {
+                    if(i>=startFrom-1)server.Queue.Enqueue(tr);
+                }
+                await ctx.RespondAsync($"Загруженно {server.Queue.Count} треков");
+                track = server.Queue.Dequeue();
+                
+            }
+            else {
+                track = loadResult.Tracks.First();
+            }
             if (server.IsHandled == false)
             {
                 conn.PlaybackFinished += PlaybackFinishedHandler; //Скорее всего из за этого сломана очередь
@@ -74,7 +89,7 @@ namespace KlepaBot3.Managers
             }
             else
             {
-                if (server.Queue.Count == 0)
+                if (server.Queue.Count == 0 || loadResult.LoadResultType == LavalinkLoadResultType.PlaylistLoaded)
                 {
                     server.IsPlaying = true; //Проверить что трек запустился, потом только менять на тру
                     return await PlayTrackAsync(track, conn);

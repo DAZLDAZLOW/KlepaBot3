@@ -35,9 +35,9 @@ namespace KlepaBot3.Commands
         }
 
         [Command]
-        public async Task Play(CommandContext ctx, Uri url)
+        public async Task Play(CommandContext ctx, Uri url, int startFrom = 1)
         {
-            string response = await Music.PlayAsync(ctx, url.OriginalString);
+            string response = await Music.PlayAsync(ctx, url.OriginalString,startFrom:startFrom);
             await ctx.RespondAsync(response);
         }
 
