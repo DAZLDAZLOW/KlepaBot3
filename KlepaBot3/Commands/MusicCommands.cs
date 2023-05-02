@@ -28,7 +28,7 @@ namespace KlepaBot3.Commands
         }
 
         [Command]
-        public async Task Search(CommandContext ctx, [RemainingText] string search)
+        [RequireGuild]
         {
             string response = await Music.PlayAsync(ctx, search, false);
             await ctx.RespondAsync(response);
