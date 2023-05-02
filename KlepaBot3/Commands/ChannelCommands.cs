@@ -17,6 +17,7 @@ namespace KlepaBot3.Commands
         //Общие команды
 
         [Command("rename")]
+        [RequireGuild]
         public async Task RenameCommand(CommandContext ctx,params string[] newNameArray)
         {
             var newName = String.Join(' ',newNameArray);
@@ -32,7 +33,7 @@ namespace KlepaBot3.Commands
             {
                 channel.Name = newName;
             });
-            await ctx.RespondAsync($"Канал успешно перименован в '{newName}'");
+            await ctx.Channel.SendMessageAsync($"Канал успешно перименован в '{newName}'");
         }
 
 
@@ -46,6 +47,7 @@ namespace KlepaBot3.Commands
         //Добавить команду, которая выводит список всех у кто видит этот канал
 
         [Command("add")]
+        [RequireGuild]
         public async Task AddCommand(CommandContext ctx, DiscordMember discordMember)
         {
             var channels = GetChannel(ctx);
@@ -55,7 +57,7 @@ namespace KlepaBot3.Commands
             var textChannel = ctx.Guild.GetChannel(channels.TextChannelId);
             await voiceChannel.AddOverwriteAsync(discordMember, DSharpPlus.Permissions.AccessChannels);
             await textChannel.AddOverwriteAsync(discordMember, DSharpPlus.Permissions.AccessChannels);
-            await ctx.RespondAsync($"{discordMember.Username} добавлен в приватный канал");
+            await ctx.Channel.SendMessageAsync($"{discordMember.Username} добавлен в приватный канал");
         }
 
         private KlepaChannel? GetChannel(CommandContext ctx)
@@ -65,7 +67,6 @@ namespace KlepaBot3.Commands
             
             KlepaChannel? channel = PrivateChannelManager.servers.First(x => x.ServerId == ctx.Guild.Id).Channels.FirstOrDefault(x => x.TextChannelId == ctx.Channel.Id);
             if (channel?.ChannelOwnerId != ctx.Member!.Id) return null;
-            //if (ctx.Member.Id == PrivateChannelManager.servers.First(x => x.ServerId == ctx.Guild.Id).Channels.Fi)
             return channel;
         }
     }

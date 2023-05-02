@@ -53,7 +53,6 @@ namespace KlepaBot3
             //Секция задания обработчиков событий
             Client.VoiceStateUpdated += ChannelManager.VoiceStateUpdatedHandler;
 
-
             //-----------------------------------
 
             await Client.ConnectAsync();
@@ -105,7 +104,7 @@ namespace KlepaBot3
             var commands = Client.UseCommandsNext(new CommandsNextConfiguration()
             {
                 Services = services,
-                StringPrefixes = new[] { "!!" }
+                StringPrefixes = new[] { "!" }
             });
 
             commands.RegisterCommands(Assembly.GetExecutingAssembly());

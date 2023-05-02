@@ -2,16 +2,16 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Lavalink;
+using KlepaBot3.Extansions;
 using KlepaBot3.Models;
 
 namespace KlepaBot3.Managers
 {
     public class MusicManager
     {
-        //  private LavalinkExtension? lava;
         private List<ServerQueue> servers = new List<ServerQueue>();
 
-        public async Task<string> PlayAsync(CommandContext ctx, string searchQuery, bool isUrlSearch = true, int startFrom = 1)
+        public async Task<string> PlayAsync(CommandContext ctx, string searchQuery, bool isUrlSearch = true, int startFrom = 1, bool shufflePlaylist = false)
         {
             var lava = ctx.Client.GetLavalink();
             var node = lava.ConnectedNodes.Values.First();
@@ -64,14 +64,21 @@ namespace KlepaBot3.Managers
             
             if (loadResult.LoadResultType == LavalinkLoadResultType.PlaylistLoaded)
             {
+                if(startFrom < 1 || startFrom > loadResult.Tracks.Count())
+                {
+                    return "Стартовая точка больше чем треков в плейлисте";
+                }
                 //int i = startFrom;
                 foreach (var (tr, i) in loadResult.Tracks.Select((value, ind) => (value, ind)))
                 {
                     if(i>=startFrom-1)server.Queue.Enqueue(tr);
                 }
                 await ctx.RespondAsync($"Загруженно {server.Queue.Count} треков");
+                if (shufflePlaylist)
+                {
+                    server.Queue = server.Queue.Shuffle();
+                }
                 track = server.Queue.Dequeue();
-                
             }
             else {
                 track = loadResult.Tracks.First();
@@ -100,6 +107,50 @@ namespace KlepaBot3.Managers
                     return $"Трек добавлен в очередь.\nНомер в очереди: {server.Queue.Count + 1}";
                 }
             }
+        }
+
+        public LavalinkTrack? GetCurrnetTrack(CommandContext ctx)
+        {
+            var lava = ctx.Client.GetLavalink();
+            var node = lava.ConnectedNodes.Values.First();
+            var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+            var track = conn.CurrentState.CurrentTrack;
+            if (track == null)
+            {
+                return null;
+            }
+            return track;
+        }
+
+        public IEnumerable<LavalinkTrack> GetQueueTracks(CommandContext ctx, int MaxTracks = 10)
+        {
+            if(MaxTracks <= 0)
+                return Enumerable.Empty<LavalinkTrack>();
+
+            var lava = ctx.Client.GetLavalink();
+            var node = lava.ConnectedNodes.Values.First();
+            var conn = node.GetGuildConnection(ctx.Member.VoiceState.Guild);
+            var track = conn.CurrentState.CurrentTrack;
+
+            if (track == null)
+                return Enumerable.Empty<LavalinkTrack>();
+
+            var list = new List<LavalinkTrack>
+            {
+                track
+            };
+            var server = servers.FirstOrDefault(x => x.ServerId == ctx.Guild.Id);
+
+            if (server == null)
+                return Enumerable.Empty<LavalinkTrack>();
+
+            if (server.Queue.Count > 0 || MaxTracks > 1)
+            {
+                var takeCount = (server.Queue.Count >= (MaxTracks - 1)) ? MaxTracks - 1 : server.Queue.Count;
+                list.AddRange(server.Queue.Take(takeCount));
+            }
+
+            return list;
         }
 
         public async Task<string> PauseAsync(CommandContext ctx)
@@ -208,8 +259,15 @@ namespace KlepaBot3.Managers
             {
                 return "Нет трека - нет скипа";
             }
-            await PlayTrackAsync(server.Queue.Dequeue(), conn);
-            return "Трек пропущен";
+            if (server.Queue.Count == 0)
+            {
+                await conn.StopAsync();
+            }
+            else
+            {
+                await PlayTrackAsync(server.Queue.Dequeue(), conn);
+            }
+                return "Трек пропущен";
         }
 
         private async Task PlaybackFinishedHandler(LavalinkGuildConnection sender, DSharpPlus.Lavalink.EventArgs.TrackFinishEventArgs e)
@@ -222,7 +280,10 @@ namespace KlepaBot3.Managers
                 await sender.DisconnectAsync();
                 return;
             }
-            await PlayTrackAsync(server.Queue.Dequeue(), sender);
+            else
+            {
+                await PlayTrackAsync(server.Queue.Dequeue(), sender);
+            }
         }
 
         private async Task<string> PlayTrackAsync(LavalinkTrack track, LavalinkGuildConnection conn)
@@ -262,6 +323,5 @@ namespace KlepaBot3.Managers
             if (channel.Type != ChannelType.Voice) return null;
             return channel;
         }
-
     }
 }
